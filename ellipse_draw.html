@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Побудова еліпса</title>
+    <meta charset="UTF-8">
+    <style>
+        .drawing-area { margin-top: 20px; }
+        .method { margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h2>Побудова еліпса</h2>
+    <p>Введіть розміри півосей еліпса:</p>
+    <p>Велика піввісь (a): <input type="text" id="axisA" value="100"></p>
+    <p>Мала піввісь (b): <input type="text" id="axisB" value="50"></p>
+    <p><button onclick="drawEllipse()">Побудувати</button></p>
+
+    <div class="drawing-area">
+        <h3>Мозаїчний метод</h3>
+        <div id="mosaic" class="method"></div>
+
+        <h3>SVG метод</h3>
+        <div id="svg" class="method">
+            <svg width="400" height="400"></svg>
+        </div>
+
+        <h3>Canvas метод</h3>
+        <div id="canvas" class="method">
+            <canvas width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function drawEllipse() {
+            let a = parseFloat(document.getElementById("axisA").value);
+            let b = parseFloat(document.getElementById("axisB").value);
+
+            if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) {
+                alert("Введіть коректні значення півосей (числа більше 0).");
+                return;
+            }
+
+            // Очищення попередніх малюнків
+            document.getElementById("mosaic").innerHTML = "";
+            document.querySelector("#svg svg").innerHTML = "";
+            let canvas = document.querySelector("#canvas canvas");
+            let ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Мозаїчний метод
+            let mosaicDiv = document.getElementById("mosaic");
+            let step = 0.01;
+            for (let t = 0; t <= 2 * Math.PI; t += step) {
+                let x = a * Math.cos(t) + 200; // Зсув для центру
+                let y = b * Math.sin(t) + 200;
+                let pixel = document.createElement("div");
+                pixel.style.position = "absolute";
+                pixel.style.left = x + "px";
+                pixel.style.top = y + "px";
+                pixel.style.width = "1px";
+                pixel.style.height = "1px";
+                pixel.style.backgroundColor = "black";
+                mosaicDiv.appendChild(pixel);
+            }
+
+            // SVG метод
+            let svg = document.querySelector("#svg svg");
+            let ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            ellipse.setAttribute("cx", "200");
+            ellipse.setAttribute("cy", "200");
+            ellipse.setAttribute("rx", a);
+            ellipse.setAttribute("ry", b);
+            ellipse.setAttribute("stroke", "black");
+            ellipse.setAttribute("stroke-width", "2");
+            ellipse.setAttribute("fill", "none");
+            svg.appendChild(ellipse);
+
+            // Canvas метод
+            ctx.beginPath();
+            ctx.ellipse(200, 200, a, b, 0, 0, 2 * Math.PI);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>
